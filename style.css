@@ -1,0 +1,249 @@
+/* Import font pixel */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Press Start 2P', cursive;
+  min-height: 100vh;
+  background: url('frames/background1.jpg');
+  animation: bgMove 9s ease infinite;
+}
+
+/* Background animation */
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Card utama */
+.pixel-card {
+  position: relative;
+  background: #ffffff;
+  border: 4px solid #f472b6;
+  box-shadow: 8px 8px 0 #c084fc;
+  border-radius: 16px;
+  padding: 1.5rem;
+
+  /* Animasi */
+  animation:
+    popIn 0.6s ease,
+    floatCard 4s ease-in-out infinite;
+}
+
+/* Animasi masuk */
+@keyframes popIn {
+  0% {
+    transform: scale(0.85) rotate(-1deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Floating halus */
+@keyframes floatCard {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.pixel-card::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 18px;
+  background: linear-gradient(
+    45deg,
+    #f9a8d4,
+    #c084fc,
+    #f472b6
+  );
+  opacity: 0.25;
+  filter: blur(12px);
+  z-index: -1;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.pixel-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 10px 10px 0 #a855f7;
+  transition: all 0.25s ease;
+}
+
+
+/* Video kamera */
+.pixel-video {
+  transform: scaleX(-1);
+  border: 4px solid #f9a8d4;
+  box-shadow: 4px 4px 0 #d8b4fe;
+  border-radius: 12px;
+  animation: floatCam 3s ease-in-out infinite;
+}
+
+@keyframes floatCam {
+  0%, 100% { transform: translateY(0) scaleX(-1); }
+  50% { transform: translateY(-6px) scaleX(-1); }
+}
+
+/* Canvas hasil strip */
+.pixel-canvas {
+  border: 4px solid #c084fc;
+  box-shadow: 6px 6px 0 #f9a8d4;
+  border-radius: 12px;
+  background: white;
+  animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Select frame */
+.pixel-select {
+  border: 3px solid #f472b6;
+  background: #fff0f6;
+  color: #6b21a8;
+  padding: 0.5rem;
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 #f9a8d4;
+  transition: all 0.2s ease;
+}
+
+.pixel-select:hover {
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0 #c084fc;
+}
+
+/* Button utama */
+.pixel-btn {
+  border: 3px solid #c084fc;
+  background: #f472b6;
+  color: white;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 #a855f7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pixel-btn:hover {
+  background: #ec4899;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #7e22ce;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #7e22ce;
+}
+
+/* Download button */
+.pixel-btn-green {
+  border: 3px solid #86efac;
+  background: #4ade80;
+  box-shadow: 4px 4px 0 #22c55e;
+}
+
+.pixel-btn-green:hover {
+  background: #22c55e;
+}
+
+/* Reset button (cute red) */
+.pixel-btn-red {
+  border: 3px solid #fca5a5;
+  background: #fb7185;
+  box-shadow: 4px 4px 0 #e11d48;
+}
+
+.pixel-btn-red:hover {
+  background: #f43f5e;
+}
+
+/* Countdown */
+.pixel-countdown {
+  color: #db2777;
+  text-shadow: 3px 3px #c084fc;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Label teks */
+.pixel-label {
+  color: #7e22ce;
+  margin-bottom: 0.3rem;
+}
+
+/* Small sparkle effect */
+.sparkle {
+  position: relative;
+}
+
+.sparkle::after {
+  content: "✨";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
+.pixel-btn-red {
+  border: 3px solid #fca5a5;
+  background: #fb7185;
+  color: white;
+  box-shadow: 4px 4px 0 #e11d48;
+  transition: all 0.2s ease;
+}
+
+.pixel-btn-red:hover {
+  background: #f43f5e;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #be123c;
+}
+
+.pixel-btn-red:hover {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+

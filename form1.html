@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Miaw Photobooth</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS Imut -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-pink-50">
+
+<div class="w-full max-w-5xl p-6 pixel-card">
+  <h1 class="text-center text-xl mb-6 text-pink-500 font-bold">
+    💗💗💗 Miaw PHOTOBOOTH 💗💗💗
+  </h1>
+<!-- WRAPPER -->
+<div class="flex flex-col md:flex-row gap-10">
+
+  <!-- ================= KIRI : KAMERA ================= -->
+  <div class="md:w-1/2 w-full flex flex-col">
+
+    <!-- Countdown -->
+    <div
+      id="countdown"
+      class="pixel-countdown text-center text-4xl mb-3 hidden">
+    </div>
+
+    <!-- Video -->
+    <video
+      id="video"
+      autoplay
+      class="w-full rounded-lg pixel-video mb-4">
+    </video>
+
+    <!-- Frame select -->
+    <select
+      id="frameSelect"
+      class="w-full p-2 mb-6 rounded pixel-select">
+      <option value="">No Frame</option>
+      <option value="frames/frame1.png">Frame 1</option>
+      <option value="frames/frame2.png">Frame 2</option>
+      <option value="frames/frame3.png">Frame 3</option>
+      <option value="frames/frame4.png">Frame 4</option>
+      <option value="frames/frame5.png">Frame 5</option>
+    </select>
+
+    <!-- Buttons -->
+    <div class="space-y-4">
+      <button
+        onclick="startStrip()"
+        class="w-full p-2 rounded pixel-btn">
+        Mulai Berfoto Ehe!
+      </button>
+
+      <button
+        onclick="resetPhotobooth()"
+        class="w-full p-2 rounded pixel-btn">
+        Reset Aja
+      </button>
+
+      <a href="index.html" class="block pt-2">
+        <button class="w-full p-2 rounded pixel-btn-red">
+          Balik Ahh...
+        </button>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ================= KANAN : HASIL ================= -->
+  <div class="md:w-1/2 w-full flex flex-col items-center">
+
+    <!-- Canvas hasil -->
+    <canvas
+      id="canvas"
+      class="hidden w-64 pixel-canvas bg-white rounded-lg shadow-md">
+    </canvas>
+
+    <!-- Download -->
+    <button
+      onclick="downloadStrip()"
+      id="downloadBtn"
+      class="hidden mt-6 w-full p-3 rounded pixel-btn-green">
+      DOWNLOAD 💾
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+/* ================== SETUP ================== */
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const countdownEl = document.getElementById("countdown");
+const frameSelect = document.getElementById("frameSelect");
+const downloadBtn = document.getElementById("downloadBtn");
+
+const totalPhotos = 3;
+const photoWidth = 320;
+const photoHeight = 240;
+
+let photoIndex = 0;
+let photos = []; // <-- SIMPAN SNAPSHOT FOTO
+
+/* ================== CAMERA ================== */
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => video.srcObject = stream);
+
+/* ================== EVENTS ================== */
+frameSelect.addEventListener("change", renderFramePreview);
+
+/* ================== MAIN FLOW ================== */
+function startStrip() {
+  photoIndex = 0;
+  photos = [];
+
+  canvas.width = photoWidth;
+  canvas.height = photoHeight * totalPhotos;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  canvas.classList.remove("hidden");
+  downloadBtn.classList.add("hidden");
+
+  takeNextPhoto();
+}
+
+function takeNextPhoto() {
+  let count = 3;
+  countdownEl.textContent = count;
+  countdownEl.classList.remove("hidden");
+
+  const interval = setInterval(() => {
+    count--;
+    countdownEl.textContent = count;
+
+    if (count === 0) {
+      clearInterval(interval);
+      countdownEl.classList.add("hidden");
+      capturePhoto();
+    }
+  }, 1000);
+}
+
+/* ================== SNAPSHOT (FIX UTAMA) ================== */
+function capturePhoto() {
+  // offscreen canvas untuk freeze foto
+  const tempCanvas = document.createElement("canvas");
+  tempCanvas.width = photoWidth;
+  tempCanvas.height = photoHeight;
+  const tempCtx = tempCanvas.getContext("2d");
+
+  // ambil 1 frame dari video
+  tempCtx.drawImage(video, 0, 0, photoWidth, photoHeight);
+
+  // simpan hasil foto
+  photos.push(tempCanvas);
+
+  redrawPhotosOnly();
+  photoIndex++;
+
+  if (photoIndex < totalPhotos) {
+    setTimeout(takeNextPhoto, 600);
+  } else {
+    renderFramePreview();
+    downloadBtn.classList.remove("hidden");
+  }
+}
+
+/* ================== DRAWING ================== */
+function redrawPhotosOnly() {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  photos.forEach((photo, index) => {
+    ctx.drawImage(
+      photo,
+      0,
+      index * photoHeight,
+      photoWidth,
+      photoHeight
+    );
+  });
+}
+
+function renderFramePreview() {
+  if (canvas.classList.contains("hidden")) {
+    canvas.width = photoWidth;
+    canvas.height = photoHeight * totalPhotos;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    canvas.classList.remove("hidden");
+  }
+
+  redrawPhotosOnly();
+
+  if (!frameSelect.value) return;
+
+  const frame = new Image();
+  frame.src = frameSelect.value;
+  frame.onload = () => {
+    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+  };
+}
+
+/* ================== DOWNLOAD ================== */
+function downloadStrip() {
+  const link = document.createElement("a");
+  link.download = "pixel-photobooth.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+function resetPhotobooth() {
+  // reset data
+  photoIndex = 0;
+  photos = [];
+
+  // clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // hide canvas & download button
+  canvas.classList.add("hidden");
+  downloadBtn.classList.add("hidden");
+
+  // reset frame select
+  frameSelect.value = "";
+
+  // reset countdown
+  countdownEl.classList.add("hidden");
+}
+
+</script>
+
+</body>
+</html>
